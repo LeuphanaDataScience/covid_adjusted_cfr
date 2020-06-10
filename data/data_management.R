@@ -3,6 +3,8 @@ library(dplyr)
 library(ggplot2)
 library(lubridate)
 
+### Further processing and plots (allegedly)
+
 source("data_new/china/data_management_china.R")
   
 #China, Hubei
