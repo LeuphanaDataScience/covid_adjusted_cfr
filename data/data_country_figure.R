@@ -8,6 +8,7 @@ theme_set(theme_bw())
 library(xtable)
 library(socialmixr)
 
+### Plots for the supplementary p4 - 6 (allegedly)
 
 # Settings ----
 country_name="Lombardy"
