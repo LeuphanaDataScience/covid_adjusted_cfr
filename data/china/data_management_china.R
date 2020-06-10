@@ -13,6 +13,7 @@ day_quarantine = as.Date("2020-01-20")
 ## Age distribution in China for 9 age classes ----
 
 # (https://www.worldometers.info/demographics/china-demographics/) 
+# Population in each age group, divided by male and female (?)
 age_dist<- c(
   83932437 + 86735183,
   84262751 + 82341859,
@@ -22,7 +23,7 @@ age_dist<- c(
   123445382 + 98740491,
   77514139 + 74149766,
   44949689 + 26544616,
-  16181417 + 7581777 + 2305024 + 475193 + 74692)
+  16181417 + 7581777 + 2305024 + 475193 + 74692) # Summing all sub age groups from 80+
 age_dist<-age_dist/sum(age_dist)
 
 ## Population in Hubei ----
@@ -33,6 +34,9 @@ pop_t = 59020000
 ## Case incidence in Hubei up to 2020-02-11 ----
 
 # (Chinese CDC Weekly, The epidemiological characteristics of an outbreak...)
+# Dataset A in the model
+# Pull confirmed cases in Hubei
+
 confirmed_cases = read.csv("data/china/confirmed_cases.csv") %>%
   tbl_df() %>%
   mutate(date=ymd(paste(year,month,day,sep="-"))) %>%
@@ -41,6 +45,7 @@ incidence_cases = pull(confirmed_cases,confirmed_cases_hubei)
 
 
 ## Deaths incidence in Hubei up to 2020-02-11 (GuangchuangYu) -------
+### Dataset C in the model
 
 # Death incidence in China
 # remotes::install_github("GuangchuangYu/nCov2019")
@@ -54,7 +59,7 @@ incidence_cases = pull(confirmed_cases,confirmed_cases_hubei)
 #   mutate(mort=dead-lag(dead,default=0))
 # save(china_incidence,file="data/china/china_incidence.Rdata")
 load("data/china/china_incidence.Rdata")
-sum(china_incidence$incidence)
+sum(china_incidence$incidence) 
 
 # ggplot(china_incidence,aes(date, incidence)) +
 #   geom_col(fill='chartreuse4') + theme_minimal(base_size = 14) +
@@ -63,31 +68,38 @@ sum(china_incidence$incidence)
 #   geom_col(fill='firebrick') + theme_minimal(base_size = 14) +
 #   xlab(NULL) + ylab(NULL)
 
-death = china_incidence$mort
-incidence_deaths_tot = c(rep(0,day_max-day_data+1-length(death)),death)
+death = china_incidence$mort 
+incidence_deaths_tot = c(rep(0,day_max-day_data+1-length(death)),death) ### Fill in 0s for days before deaths occured
+
 
 # Correct for confirmed cases in Hubei only (979 total)
-incidence_deaths = round(979/sum(incidence_deaths_tot)*incidence_deaths_tot)
+# Get % of deaths per day, then correct the daily death cases for new total of 979
+
+### If 71.4% of actual deaths is 979, actual death would be 1371 --> need scaling (?)
+incidence_deaths = round(979*incidence_deaths_tot/sum(incidence_deaths_tot))
 
 
 
 ## Age distribution of cases in mainland China as of 2020-02-11 ----
+## B in the model
 
 # (Chinese CDC Weekly, The epidemiological characteristics of an outbreak...)
 cases_tmax = c(416,549,3619,7600,8571,10008,8583,3918,1408)
-prop_cases_tmax = cases_tmax / sum(cases_tmax)
+prop_cases_tmax = cases_tmax / sum(cases_tmax) ### B in the model
 
 ## Age distribution of deaths in mainland China as of 2020-02-11 ----
+## D in the model
 
 # (Chinese CDC Weekly, The epidemiological characteristics of an outbreak...)
 mort_tmax = c(0,1,7,18,38,130,309,312,208)
-prop_mort_tmax = mort_tmax / sum(mort_tmax)
+prop_mort_tmax = mort_tmax / sum(mort_tmax) ### D in the model
 
-agedistr_cases=cases_tmax
-agedistr_deaths=mort_tmax
+agedistr_cases=cases_tmax ### case_tmax is vector of cummulative cases per age groups
+agedistr_deaths=mort_tmax ### mort_tmax is vector of cummulative deaths per age groups
 
 ## Comorbidities among cases and deaths ----
 
+### Comorbidities includes but not limited to the five listed belowed
 comorbidities_total = c(44672-23690,1023-617)
 hypertension_tmax = c(2683,161)
 diabetes_tmax = c(1102,80)
@@ -165,13 +177,14 @@ dist_cvd_pop =
 dist_hypertension_pop = c(.01,.01,0.087,0.123,0.199,0.338,0.480,.611,.611)
 
 # Later deaths
+
 laterdeaths = read.csv("data/china/time_series_19-covid-Deaths.csv") %>%
   tbl_df() %>%
   filter(Country.Region=="China",Province.State=="Hubei") %>%
-  gather("date","mort",5:57) %>%
+  gather("date","mort",5:57) %>% ### Gather cummulative death counts from 22/1/2020 to 14/3/2020 (mort = cum. deaths)
   mutate(date2=gsub("X","",date),
          date2=mdy(date2),
-         deaths=mort-lag(mort,1,default = 0)) 
+         deaths=mort-lag(mort,1,default = 0)) ### Gather daily deaths counts from 22/1/2020 to 14/3/2020 (deaths = daily deaths)
   
   
 #China, Hubei
