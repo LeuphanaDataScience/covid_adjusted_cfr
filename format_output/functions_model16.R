@@ -74,6 +74,7 @@ plot_total_cases = function(samples,data_list,col1="darkcyan",col2="chartreuse3"
     scale_x_discrete(expand=expand_scale(add=.4)) +
     labs(x="",y="Total cases") 
 }
+
 plot_agedist_cases = function(samples,data_list,col1="darkcyan",col2="chartreuse3",col3="deepskyblue2") {
   t0 = data_list$t0
   tmax2 = data_list$S
@@ -140,6 +141,7 @@ plot_incidence_deaths = function(samples,data_list,col1="firebrick",col2="gold",
     geom_vline(xintercept=tswitch+start_date,linetype=2) +
     geom_vline(xintercept=tmax2+start_date,linetype=2) 
 }
+
 plot_total_deaths = function(samples,data_list,col1="firebrick",col2="gold",col3="darkorange",start_date,end_date) {
   t0 = data_list$t0
   tmax2 = data_list$S
@@ -164,7 +166,6 @@ plot_total_deaths = function(samples,data_list,col1="firebrick",col2="gold",col3
     scale_x_discrete(expand=expand_scale(add=.5)) +
     labs(x="",y="Total deaths") 
 }
-
 
 plot_agedist_deaths = function(samples,data_list,col1="firebrick",col2="darkorange") {
   t0 = data_list$t0
@@ -204,7 +205,6 @@ plot_agedist_deaths = function(samples,data_list,col1="firebrick",col2="darkoran
     theme(axis.text.x=element_text(angle=45,hjust=1))
 }
 
-
 plot_cfr = function(samples,data_list,col1,col2,col3) {
   t0 = data_list$t0
   tmax2 = data_list$S
@@ -231,7 +231,6 @@ plot_cfr = function(samples,data_list,col1,col2,col3) {
     labs(x=NULL,y="Mortality",colour=NULL) +
     theme(axis.text.x=element_text(angle=45,hjust=1))
 }
-
 
 plot_agedist_cfr= function(samples,data_list,col1,col2,col3,insert=c(.7,7,.35,.95)) {
   t0 = data_list$t0
@@ -299,7 +298,6 @@ plot_agedist_cfr= function(samples,data_list,col1,col2,col3,insert=c(.7,7,.35,.9
     annotate("rect",xmin=.5,xmax=6.5,ymin=0,ymax=.037,fill=NA,colour="grey30",linetype=2) + 
     annotate("segment",x=3.5,xend=mean(insert[1:2]),y=.037,yend=insert[3]*1.2,colour="grey30",linetype=2) 
 }
-
 
 plot_incidence_deaths2 = function(samples,data_list,col1="firebrick",col2="gold",col3="darkorange",start_date,end_date) {
   t0 = data_list$t0

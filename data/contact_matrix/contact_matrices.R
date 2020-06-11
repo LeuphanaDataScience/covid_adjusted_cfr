@@ -6,7 +6,7 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 
-list_surveys()
+list_surveys() ### loaded from the socialmixr-package; lists available surveys
 
 #China (Shanghai)
 shanghai_survey <- get_survey("https://doi.org/10.5281/zenodo.3366396")

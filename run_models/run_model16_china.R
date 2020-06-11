@@ -1,5 +1,4 @@
 # Setup ----
-source("setup.R")
 source("data/china/data_management_china.R")
 
 #### Model 16 A with data up to 11 February -----------------------------------------------
