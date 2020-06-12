@@ -18,7 +18,8 @@ linton_pars = get_par_lnorm(linton_mean,linton_sd)
 # Discretize
 gamma = numeric(60)
 for(i in 1:60) {
-  gamma[i] = plnorm(i+.5,linton_pars$mu,linton_pars$sigma)-plnorm(i-.5,linton_pars$mu,linton_pars$sigma)
+  gamma[i] = plnorm(i+.5,linton_pars$mu,linton_pars$sigma)-
+    plnorm(i-.5,linton_pars$mu,linton_pars$sigma)
 }
 # Normalize
 gamma = gamma/sum(gamma)
@@ -26,7 +27,8 @@ gamma = gamma/sum(gamma)
 # lines(gamma,col="red")
 
 ## Compute proportion of symptomatics ----
-# uncertainty on symptomatic rate from a systematic review (pooled mean: 19% (prediction interval 11 – 29%))
+# uncertainty on symptomatic rate from a systematic review 
+# (pooled mean: 19% (prediction interval 11 – 29%))
 m = 1-0.19
 low = 1-0.29
 high = 1-0.11
@@ -37,9 +39,12 @@ v = (mean(c(m-low,high-m))/qnorm(0.975))^2
 round(qbeta(c(0.5,0.025,0.975),p_psi_alpha,p_psi_beta),2)
 
 ## Compute reduced transmissibility of pre- and a-symptomatics kappa ----
-# He et al: 44% (25–69%) of secondary cases were infected during the index cases’ presymptomatic stage http://nature.com/articles/s41591-020-0869-5
-# Liu estimated 46% (21 – 46%) (S. Funk group) https://wellcomeopenresearch.org/articles/5-58
-# Ganyani (Wallinga en Hens) 48% (32-67%) https://medrxiv.org/content/10.1101/2020.03.05.20031815v1
+# He et al: 44% (25–69%) of secondary cases were infected during the index cases’
+  # presymptomatic stage http://nature.com/articles/s41591-020-0869-5
+# Liu estimated 46% (21 – 46%) (S. Funk group) 
+  # https://wellcomeopenresearch.org/articles/5-58
+# Ganyani (Wallinga en Hens) 48% (32-67%) 
+  # https://medrxiv.org/content/10.1101/2020.03.05.20031815v1
 
 # porameters
 gt = 5.2
