@@ -1,4 +1,5 @@
 # Setup ----
+setwd("/Users/ElinaKu/Documents/GitHub/covid_adjusted_cfr")
 source("setup.R")
 source("data/switzerland/data_management_switzerland.R")
 
@@ -62,13 +63,40 @@ qsum(kappa)
 
 ## Contact matrix ----
 
-contact_matrix_europe = c(5.13567073170732, 1.17274819632136, 0.982359525171638, 2.21715890088845, 1.29666356906914, 0.828866413937242, 0.528700773224482, 0.232116187961884, 0.0975205061876398, 1.01399087153423, 10.420788530466, 1.5084165224448, 1.46323525034693, 2.30050630727188, 1.0455742822567, 0.396916593664865, 0.276112578159939, 0.0867321859134207, 0.787940961549209, 1.39931415327149, 4.91448118586089, 2.39551550152373, 2.08291844616138, 1.67353143324194, 0.652483430981848, 0.263165822550241, 0.107498717856296, 1.53454251726848, 1.17129688889679, 2.06708280469829, 3.91165644171779, 2.74588910732349, 1.66499320847473, 1.02145416818956, 0.371633336270256, 0.112670158106901, 0.857264438638371, 1.7590640625625, 1.71686658407219, 2.62294018855816, 3.45916114790287, 1.87635185962704, 0.862205884832066, 0.523958801433231, 0.205791955532149, 0.646645383952458, 0.943424739130445, 1.62776721065554, 1.87677409215498, 2.21415705015835, 2.5920177383592, 1.10525460534109, 0.472961105423521, 0.282448363507455, 0.504954014454259, 0.438441714821823, 0.77694120330432, 1.40954408148402, 1.24556204828388, 1.35307720400585, 1.70385674931129, 0.812686154912104, 0.270111273681845, 0.305701280434649, 0.420580126969344, 0.432113761275257, 0.707170907986224, 1.04376196943771, 0.798427737704416, 1.12065725135372, 1.33035714285714, 0.322575366839763, 0.237578345845701, 0.24437789962337, 0.326505855457376, 0.396586297530862, 0.758318763302674, 0.881999483055259, 0.688988121391528, 0.596692087603768, 0.292682926829268)
+contact_matrix_europe = c(5.13567073170732, 1.17274819632136, 0.982359525171638, 
+                          2.21715890088845, 1.29666356906914, 0.828866413937242, 
+                          0.528700773224482, 0.232116187961884, 0.0975205061876398, 
+                          1.01399087153423, 10.420788530466, 1.5084165224448, 
+                          1.46323525034693, 2.30050630727188, 1.0455742822567, 
+                          0.396916593664865, 0.276112578159939, 0.0867321859134207, 
+                          0.787940961549209, 1.39931415327149, 4.91448118586089, 
+                          2.39551550152373, 2.08291844616138, 1.67353143324194, 
+                          0.652483430981848, 0.263165822550241, 0.107498717856296, 
+                          1.53454251726848, 1.17129688889679, 2.06708280469829, 
+                          3.91165644171779, 2.74588910732349, 1.66499320847473, 
+                          1.02145416818956, 0.371633336270256, 0.112670158106901, 
+                          0.857264438638371, 1.7590640625625, 1.71686658407219, 
+                          2.62294018855816, 3.45916114790287, 1.87635185962704, 
+                          0.862205884832066, 0.523958801433231, 0.205791955532149, 
+                          0.646645383952458, 0.943424739130445, 1.62776721065554, 
+                          1.87677409215498, 2.21415705015835, 2.5920177383592, 
+                          1.10525460534109, 0.472961105423521, 0.282448363507455, 
+                          0.504954014454259, 0.438441714821823, 0.77694120330432,
+                          1.40954408148402, 1.24556204828388, 1.35307720400585, 
+                          1.70385674931129, 0.812686154912104, 0.270111273681845, 
+                          0.305701280434649, 0.420580126969344, 0.432113761275257, 
+                          0.707170907986224, 1.04376196943771, 0.798427737704416, 
+                          1.12065725135372, 1.33035714285714, 0.322575366839763, 
+                          0.237578345845701, 0.24437789962337, 0.326505855457376, 
+                          0.396586297530862, 0.758318763302674, 0.881999483055259, 
+                          0.688988121391528, 0.596692087603768, 0.292682926829268)
 
 data.frame(contacts=contact_matrix_europe) %>%
   tbl_df() %>%
   mutate(age1=rep(1:9,9),age2=rep(1:9,each=9)) %>%
   ggplot() +
-  geom_tile(aes(x=age2,y=age1,fill=contacts))
+  geom_tile(aes(x=age2,y=age1,fill=contacts))+
+  ggtitle("Switzerland")
 
 ## Format for stan
 
@@ -122,40 +150,66 @@ data_list_model16A = list(
   G=60,
   p_gamma=gamma
 )
-
+library(rstan)
 # test
-M_model16 = stan_model("models/model16.stan")
-T_model16 = sampling(M_model16,data = data_list_model16A,iter = 5,chains = 1,init=0.5,control=list(max_treedepth=10,adapt_delta=0.8))
-# print(T_model16,pars=c("beta","eta","epsilon","rho","pi"))
+{
+  tictoc::tic() # Nothing shows
+  M_model16 = stan_model(model_code = "models/model16.stan")
+  tictoc::toc()
+}
+
+{
+  tictoc::tic() # Nothing shows
+  T_model16 = sampling(M_model16, data = data_list_model16A, 
+                       iter = 1000,chains = 4, 
+                       init=0.5, control=list(max_treedepth=10,adapt_delta=0.8))
+  tictoc::toc()
+}
+
+# print(T_model16, pars=c("beta","eta","epsilon","rho","pi"))
 
 # Create data and bash files ----
-bashfile_rdump("model16",id="CH-A",data_list_model16A,warmup=500,iter=500,adapt_delta=0.8,max_depth=10,init=0.5,timelimit=12,chains=4)
+# bashfile_rdump("model16",id="CH-A",data_list_model16A, warmup=500, iter=500,              
+# adapt_delta=0.8, max_depth=10, init=0.5, timelimit=12, chains=4)
 
 # system("scp /home/julien/Dropbox/Unibe/covid-19/covid_adjusted_cfr/models/model16.stan /home/julien/Dropbox/Unibe/covid-19/covid_adjusted_cfr/run_models/sb_model16CH* /home/julien/Dropbox/Unibe/covid-19/covid_adjusted_cfr/run_models/data_S_model16CH* UBELIX:projects/COVID_age/model/.")
 
 # Copy back posterior samples
-system("scp  UBELIX:projects/COVID_age/model/S_model16CH-A_2020-05-04-16-16-46_*  /home/julien/Dropbox/Unibe/covid-19/covid_adjusted_cfr/posterior_samples/.")
-system("scp  UBELIX:projects/COVID_age/model/data_S_model16CH-A_2020-05-04-16-16-46.R /home/julien/Dropbox/Unibe/covid-19/covid_adjusted_cfr/posterior_samples/.")
+# system("scp  UBELIX:projects/COVID_age/model/S_model16CH-A_2020-05-04-16-16-46_*  /home/julien/Dropbox/Unibe/covid-19/covid_adjusted_cfr/posterior_samples/.")
+# system("scp  UBELIX:projects/COVID_age/model/data_S_model16CH-A_2020-05-04-16-16-46.R /home/julien/Dropbox/Unibe/covid-19/covid_adjusted_cfr/posterior_samples/.")
 
 # CHad posterior samples 
 D_S_model16ACH = read_rdump("posterior_samples/data_S_model16CH-A_2020-05-04-16-16-46.R")
-S_model16ACH = read_stan_csv(paste0("posterior_samples/",dir("posterior_samples",pattern = 'S_model16CH-A_2020-05-04-16-16-46_[[:digit:]]+.csv')))
+
+{
+  tictoc::tic() # 77.849
+  S_model16ACH = read_stan_csv(paste0("posterior_samples/",
+                                      dir("posterior_samples",
+                                      pattern = 'S_model16CH-A_2020-05-04-16-16-46_[[:digit:]]+.csv')))
+  tictoc::toc()
+}
+
 
 # Checks
-check_hmc_diagnostics(S_model16ACH)
-print(S_model16ACH,pars=c("beta","eta","epsilon","rho","pi","psi"),digits_summary=4)
+# check_hmc_diagnostics(S_model16ACH)
+
+{
+  tictoc::tic() # 33.126
+  print(S_model16ACH,pars=c("beta","eta","epsilon","rho","pi","psi"), digits_summary=4)
+  tictoc::toc()
+}
+
 print(S_model16ACH,pars=c("cfr_A_symptomatic","cfr_B_symptomatic","cfr_C_symptomatic","cfr_D_symptomatic","cfr_C_all","cfr_D_all"),digits_summary=5)
 
-
 # Plots
-source('format_output/functions_model16.R')
-plot_incidence_cases(S_model16ACH,D_S_model16ACH,start_date = day_start,end_date = day_max)
-plot_total_cases(S_model16ACH,D_S_model16ACH)
-plot_agedist_cases(S_model16ACH,D_S_model16ACH)
-plot_incidence_deaths(S_model16ACH,D_S_model16ACH,start_date = day_start,end_date = day_max+50)
-plot_total_deaths(S_model16ACH,D_S_model16ACH)
-plot_agedist_deaths(S_model16ACH,D_S_model16ACH)
+# source('format_output/functions_model16.R')
+# plot_incidence_cases(S_model16ACH,D_S_model16ACH,start_date = day_start,end_date = day_max)
+# plot_total_cases(S_model16ACH,D_S_model16ACH)
+# plot_agedist_cases(S_model16ACH,D_S_model16ACH)
+# plot_incidence_deaths(S_model16ACH,D_S_model16ACH,start_date = day_start,end_date = day_max+50)
+# plot_total_deaths(S_model16ACH,D_S_model16ACH)
+# plot_agedist_deaths(S_model16ACH,D_S_model16ACH)
 
 # Save
-save(S_model16ACH,D_S_model16ACH,file="posterior_samples/posterior_samples_CH_2020-05-04.Rdata")
+# save(S_model16ACH,D_S_model16ACH,file="posterior_samples/posterior_samples_CH_2020-05-04.Rdata")
 

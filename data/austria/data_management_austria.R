@@ -33,19 +33,22 @@ age_dist = as.data.frame(excel_age_dist) %>%
   group_by(Sex,age_group) %>%
   summarise(n=sum(Value)) %>%
   pull(n)
+
 age_dist = age_dist/sum(age_dist)
 
 ## Case incidence by date of symptoms and deaths in Austria, situation 25.04.2020
-cases=read.table("data/austria/Epikurve.csv",sep=";",header=T) %>%
+cases = read.table("data/austria/Epikurve.csv",sep=";",header=T) %>%
   transmute(date=dmy(time),new_cases=tag_Erkrankungen) %>%
-filter(date>=ymd(day_data),date<=ymd(day_max))
-
-deaths=read.table("data/austria/TodesfaelleTimeline.csv",sep=";",header=T) %>%
-  transmute(date=dmy(time),new_deaths=c(NA,diff(Todesfalle))) %>%
-filter(date>=ymd(day_data),date<=ymd(day_max))
+  filter(date>=ymd(day_data),date<=ymd(day_max))
 
 incidence_cases = pull(cases,new_cases)
+
+deaths = read.table("data/austria/TodesfaelleTimeline.csv",sep=";",header=T) %>%
+  transmute(date=dmy(time),new_deaths=c(NA,diff(Todesfalle))) %>%
+  filter(date>=ymd(day_data),date<=ymd(day_max))
+
 incidence_deaths = pull(deaths,new_deaths)
+
 p_underreport_deaths=1
 p_underreport_cases=1
 

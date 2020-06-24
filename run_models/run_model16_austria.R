@@ -1,4 +1,5 @@
 # Setup ----
+setwd("/Users/ElinaKu/Documents/GitHub/covid_adjusted_cfr")
 source("setup.R")
 source("data/austria/data_management_austria.R")
 
@@ -71,7 +72,8 @@ data.frame(contacts=contact_matrix_europe) %>%
   tbl_df() %>%
   mutate(age1=rep(1:9,9),age2=rep(1:9,each=9)) %>%
   ggplot() +
-  geom_tile(aes(x=age2,y=age1,fill=contacts))
+  geom_tile(aes(x=age2,y=age1,fill=contacts))+
+  ggtitle("Austira")
 
 ## Format for stan
 
@@ -127,36 +129,37 @@ data_list_model16A = list(
 )
 
 # test
-M_model16 = stan_model("models/model16.stan")
-T_model16 = sampling(M_model16,data = data_list_model16A,iter = 5,chains = 1,init=0.5,control=list(max_treedepth=10,adapt_delta=0.8))
-# print(T_model16,pars=c("beta","eta","epsilon","rho","pi"))
+M_model16 = stan_model(model_code = "models/model16.stan")
+T_model16 = sampling(M_model16,data = data_list_model16A,iter = 5,chains = 1, 
+                     init=0.5,control=list(max_treedepth=10,adapt_delta=0.8))
+#print(T_model16,pars=c("beta","eta","epsilon","rho","pi"))
 
 # Create data and bash files ----
-bashfile_rdump("model16",id="AU-A",data_list_model16A,warmup=500,iter=500,adapt_delta=0.8,max_depth=10,init=0.5,timelimit=12,chains=4)
+# bashfile_rdump("model16",id="AU-A",data_list_model16A,warmup=500,iter=500,adapt_delta=0.8,max_depth=10,init=0.5,timelimit=12,chains=4)
 
 # system("scp /home/julien/Dropbox/Unibe/covid-19/covid_adjusted_cfr/models/model16.stan /home/julien/Dropbox/Unibe/covid-19/covid_adjusted_cfr/run_models/sb_model16AU* /home/julien/Dropbox/Unibe/covid-19/covid_adjusted_cfr/run_models/data_S_model16AU* UBELIX:projects/COVID_age/model/.")
 
 # Copy back posterior samples
-system("scp  UBELIX:projects/COVID_age/model/S_model16AU-A_2020-05-04-16-24-28_*  /home/julien/Dropbox/Unibe/covid-19/covid_adjusted_cfr/posterior_samples/.")
-system("scp  UBELIX:projects/COVID_age/model/data_S_model16AU-A_2020-05-04-16-24-28.R /home/julien/Dropbox/Unibe/covid-19/covid_adjusted_cfr/posterior_samples/.")
+# system("scp  UBELIX:projects/COVID_age/model/S_model16AU-A_2020-05-04-16-24-28_*  /home/julien/Dropbox/Unibe/covid-19/covid_adjusted_cfr/posterior_samples/.")
+# system("scp  UBELIX:projects/COVID_age/model/data_S_model16AU-A_2020-05-04-16-24-28.R /home/julien/Dropbox/Unibe/covid-19/covid_adjusted_cfr/posterior_samples/.")
 
 # Load posterior samples 
 D_S_model16AAU = read_rdump("posterior_samples/data_S_model16AU-A_2020-05-04-16-24-28.R")
 S_model16AAU = read_stan_csv(paste0("posterior_samples/",dir("posterior_samples",pattern = 'S_model16AU-A_2020-05-04-16-24-28_[[:digit:]]+.csv')))
 
 # Checks
-check_hmc_diagnostics(S_model16AAU)
+# check_hmc_diagnostics(S_model16AAU)
 print(S_model16AAU,pars=c("beta","eta","epsilon","rho","pi","psi","nu","xi"),digits_summary=4)
 print(S_model16AAU,pars=c("cfr_A_symptomatic","cfr_B_symptomatic","cfr_C_symptomatic","cfr_D_symptomatic","cfr_C_all","cfr_D_all"),digits_summary=5)
 
 # Plots
-source('format_output/functions_model16.R')
-plot_incidence_cases(S_model16AAU,D_S_model16AAU,start_date = day_start,end_date = day_max)
-plot_total_cases(S_model16AAU,D_S_model16AAU)
-plot_agedist_cases(S_model16AAU,D_S_model16AAU)
-plot_incidence_deaths(S_model16AAU,D_S_model16AAU,start_date = day_start,end_date = day_max+50)
-plot_total_deaths(S_model16AAU,D_S_model16AAU)
-plot_agedist_deaths(S_model16AAU,D_S_model16AAU)
+# source('format_output/functions_model16.R')
+# plot_incidence_cases(S_model16AAU,D_S_model16AAU,start_date = day_start,end_date = day_max)
+# plot_total_cases(S_model16AAU,D_S_model16AAU)
+# plot_agedist_cases(S_model16AAU,D_S_model16AAU)
+# plot_incidence_deaths(S_model16AAU,D_S_model16AAU,start_date = day_start,end_date = day_max+50)
+# plot_total_deaths(S_model16AAU,D_S_model16AAU)
+# plot_agedist_deaths(S_model16AAU,D_S_model16AAU)
 
 # Save
-save(S_model16AAU,D_S_model16AAU,file="posterior_samples/posterior_samples_AU_2020-05-04.Rdata")
+# save(S_model16AAU,D_S_model16AAU,file="posterior_samples/posterior_samples_AU_2020-05-04.Rdata")
