@@ -12,6 +12,7 @@ functions {
   int[] x_i
   ) {
     int K = x_i[1];
+    
     real tmax2 = x_r[1];
     real tswitch = x_r[2];
     real dydt[(7*K)]; //SEIAR, then C and D
@@ -27,7 +28,7 @@ functions {
     real psi; // probability of symptoms
     real p_tmax; // tau is 0 after tmax (stop "recruiting")
     real p_tswitch;
-    real contact[K*K];//contact matrix, first K values, corresponds to number of contact between age class 1 and other classes, etc
+    real contact[K*K]; //contact matrix, first K values, corresponds to number of contact between age class 1 and other classes, etc
     real n_by_age[K];
     real f_inf[K];
     
@@ -55,7 +56,8 @@ functions {
     }
     //Force of infection by age classes: beta * p_tswitch * sum((number of infected people by age) / (total number of people by age) * (number of contact by age))
     for(k in 1:K){
-      f_inf[k] = beta * p_tswitch * sum(to_vector(y[(2*K+1):(3*K)]) ./ to_vector(n_by_age) .* to_vector(contact[(K*(k-1)+1):(k*K)])); //
+      f_inf[k] = beta * p_tswitch * sum(to_vector(y[(2*K+1):(3*K)]) ./ 
+      to_vector(n_by_age) .* to_vector(contact[(K*(k-1)+1):(k*K)])); //
     }
     //print("Force of infection",f_inf);
     
